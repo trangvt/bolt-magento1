@@ -202,4 +202,23 @@ class Bolt_Boltpay_OrderController extends Mage_Core_Controller_Front_Action
             throw $e;
         }
     }
+
+    public function n1wUpdateAction()
+    {
+        /** @var Bolt_Boltpay_Block_Checkout_Boltpay $boltPayBlock */
+        $boltPayBlock = $this->getLayout()->createBlock('boltpay/checkout_boltpay');
+
+        $result = array();
+
+        $result['cart_data'] = $boltPayBlock->getCartDataJs(true);
+
+        if (!$result['cart_data']) {
+            $result['success'] = false;
+            $result['error']   = true;
+            $result['error_messages'] = "Your shopping cart is empty.  Your session may have expired.";
+        }
+
+        $this->getResponse()->setHeader('Content-type', 'application/json', true);
+        $this->getResponse()->setBody(Mage::helper('core')->jsonEncode($result));
+    }
 }

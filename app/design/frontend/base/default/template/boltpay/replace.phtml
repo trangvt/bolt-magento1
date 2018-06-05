@@ -175,6 +175,26 @@ if(!$this->isAllowedReplaceScriptOnCurrentPage() || !$this->canUseBolt() ) retur
         window.onload = onloadCallback;
     }
 
+    Element.observe(document, 'AjaxPro:onComplete:after', function() {
+        onloadCallback();
+
+        new Ajax.Request('<?=$this->getUrl('boltpay/order/n1wUpdate');?>', {
+            method:'post',
+            onSuccess: n1wResult,
+            onFailure: n1wResultFailure
+        });
+    });
+
+    function n1wResult(response) {
+        var responseJSON = response.responseJSON;
+
+        eval(responseJSON.cart_data);
+    }
+
+    function n1wResultFailure() {
+        console.log('Some error appear!');
+    }
+
 </script>
 
 <style>

@@ -61,6 +61,12 @@ class Bolt_Boltpay_ShippingController extends Mage_Core_Controller_Front_Action
 
             $shippingAddress = $requestData->shipping_address;
 
+            if (!$this->isPOBoxAllowed() && $this->doesAddressContainPOBox($shippingAddress->street_address1, $shippingAddress->street_address2)) {
+                $errorDetails = array('code' => '6101', 'message' => Mage::helper('boltpay')->__('Address with P.O. Box is not allowed.'));
+                return $this->getResponse()->setHttpResponseCode(403)
+                    ->setBody(json_encode(array('status' => 'failure','error' => $errorDetails)));
+            }
+
             $region = Mage::getModel('directory/region')->loadByName($shippingAddress->region, $shippingAddress->country_code)->getCode();
 
             $addressData = array(
@@ -150,6 +156,10 @@ class Bolt_Boltpay_ShippingController extends Mage_Core_Controller_Front_Action
                 //Mage::log('Using cached address: '.var_export($cached_address, true), null, 'shipping_and_tax.log');
                 $response = unserialize($this->_cache->load($prefetchCacheKey));
                 $cacheBoltHeader = 'HIT';
+                if (!$response) {
+                    $response = Mage::helper('boltpay/api')->getShippingAndTaxEstimate($quote);
+                    $cacheBoltHeader = 'MISS';
+                }
             } else {
                 //Mage::log('Generating address from quote', null, 'shipping_and_tax.log');
                 //Mage::log('Live address: '.var_export($address_data, true), null, 'shipping_and_tax.log');
@@ -201,13 +211,13 @@ class Bolt_Boltpay_ShippingController extends Mage_Core_Controller_Front_Action
             $geoLocationAddress = $this->cleanEmptyAddressField($geoLocationAddress);
 
             // ----------^_^----------- //
-            $shippingAddress = [
+            $shippingAddress = array(
                 'city'       => @$shippingAddressOriginal['city'],
                 'region'     => @$shippingAddressOriginal['region'],
                 'region_id'  => @$shippingAddressOriginal['region_id'] ? $shippingAddressOriginal['region_id'] : null,
                 'postcode'   => @$shippingAddressOriginal['postcode'],
                 'country_id' => @$shippingAddressOriginal['country_id'],
-            ];
+            );
             unset($shippingAddressOriginal);
 
             $addressData = $this->mergeAddressData($geoLocationAddress, $shippingAddress);
@@ -378,5 +388,29 @@ class Bolt_Boltpay_ShippingController extends Mage_Core_Controller_Front_Action
         }
 
         return md5($cacheIdentifier);
+    }
+
+    /**
+     * @return mixed
+     */
+    protected function isPOBoxAllowed()
+    {
+        return Mage::getStoreConfig('payment/boltpay/allow_po_box');
+    }
+
+    /**
+     * @param $address1
+     * @param $address2
+     * @return mixed
+     */
+    public function doesAddressContainPOBox($address1, $address2 = null)
+    {
+        $poBoxRegex = '/^\s*((P(OST)?.?\s*(O(FF(ICE)?)?|B(IN|OX))+.?\s+(B(IN|OX))?)|B(IN|OX))/i';
+
+        if (preg_match($poBoxRegex, $address1) || preg_match($poBoxRegex, $address2)) {
+            return true;
+        }
+
+        return false;
     }
 }

@@ -96,15 +96,17 @@ class Bolt_Boltpay_Model_Observer
 
             $reference = $payment->getAdditionalInformation('bolt_reference');
 
-            if ( (int)($order->getGrandTotal()*100) !== $transaction->amount->amount)  {
+            if ( (int)(round($order->getGrandTotal()*100)) !== $transaction->amount->amount)  {
 
                 $message = "THERE IS A MISMATCH IN THE ORDER PAID AND ORDER RECORDED.<br>PLEASE COMPARE THE ORDER DETAILS WITH THAT RECORD IN YOUR BOLT MERCHANT ACCOUNT AT: ";
                 $message .= Mage::getStoreConfig('payment/boltpay/test') ? "https://merchant-sandbox.bolt.com" : "https://merchant.bolt.com";
                 $message .= "/transaction/$reference";
                 $message .= "<br/>Bolt reports ".($transaction->amount->amount/100).'. Magento expects '.$order->getGrandTotal();
 
-                $order->setState(Mage_Sales_Model_Order::STATE_HOLDED, true, $message)
-                    ->save();
+                // TOD properly adjust amount
+                if (abs((int)($order->getGrandTotal()*100) - $transaction->amount->amount) > 1) {
+                    $order->setState(Mage_Sales_Model_Order::STATE_HOLDED, true, $message)->save();
+                }
 
                 $metaData = array(
                     'process'   => "order verification",

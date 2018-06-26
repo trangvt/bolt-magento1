@@ -1,0 +1,22 @@
+<?php if ($this->isBoltActive()) : ?>
+    <script>
+        function validateQuote(immutableQuoteId) {
+            var xmlhttp = new XMLHttpRequest();
+
+            xmlhttp.open("POST", "<?=$this->getUrl('boltpay/quote/validate');?>", true);
+            xmlhttp.setRequestHeader("Content-type", "application/json");
+            xmlhttp.onreadystatechange = function () {
+                if (xmlhttp.readyState == XMLHttpRequest.DONE && xmlhttp.status == 200) {
+                    var result = JSON.parse(xmlhttp.responseText);
+
+                    if (result.result === 'failure'){
+                        if (confirm('<?=Mage::helper('boltpay')->__('Your cart appears to have changed since you started checking out. Would you like to refresh this page to ensure your order is correct?')?>')){
+                            window.location.reload();
+                        }
+                    }
+                }
+            };
+            xmlhttp.send(JSON.stringify({'immutable_quote_id': immutableQuoteId}));
+        }
+    </script>
+<?php endif;

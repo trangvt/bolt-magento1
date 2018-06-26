@@ -307,13 +307,13 @@ class Bolt_Boltpay_Block_Checkout_Boltpay extends Mage_Checkout_Block_Onepage_Re
                 $success = '';
                 $close = '';
             } else {
-                $check = Mage::getStoreConfig('payment/boltpay/check');
-                $onCheckoutStart = Mage::getStoreConfig('payment/boltpay/on_checkout_start');
-                $onShippingDetailsComplete = Mage::getStoreConfig('payment/boltpay/on_shipping_details_complete');
-                $onShippingOptionsComplete = Mage::getStoreConfig('payment/boltpay/on_shipping_options_complete');
-                $onPaymentSubmit = Mage::getStoreConfig('payment/boltpay/on_payment_submit');
-                $success = Mage::getStoreConfig('payment/boltpay/success');
-                $close = Mage::getStoreConfig('payment/boltpay/close');
+            $check = Mage::getStoreConfig('payment/boltpay/check');
+            $onCheckoutStart = Mage::getStoreConfig('payment/boltpay/on_checkout_start');
+            $onShippingDetailsComplete = Mage::getStoreConfig('payment/boltpay/on_shipping_details_complete');
+            $onShippingOptionsComplete = Mage::getStoreConfig('payment/boltpay/on_shipping_options_complete');
+            $onPaymentSubmit = Mage::getStoreConfig('payment/boltpay/on_payment_submit');
+            $success = Mage::getStoreConfig('payment/boltpay/success');
+            $close = Mage::getStoreConfig('payment/boltpay/close');
             }
 
             //////////////////////////////////////////////////////
@@ -400,7 +400,7 @@ class Bolt_Boltpay_Block_Checkout_Boltpay extends Mage_Checkout_Block_Onepage_Re
                     json_cart,
                     $jsonHints,
                     {
-                      check: function() {
+                      check: function() {           
                         $check
                         $checkForAdmin
                         if (isEmptyQuote) {
@@ -429,11 +429,14 @@ class Bolt_Boltpay_Block_Checkout_Boltpay extends Mage_Checkout_Block_Onepage_Re
                         // This function is called when the user proceeds to the payment details page.
                         // This is applicable only to multi-step checkout.
                         $onShippingOptionsComplete
+                                             
+                        validateQuote('{$immutableQuoteId}');                 
                       },
                       
                       onPaymentSubmit: function() {
                         // This function is called after the user clicks the pay button.
                         $onPaymentSubmit
+                                             
                       },
                       
                       success: $onSuccessCallback,
@@ -470,12 +473,12 @@ class Bolt_Boltpay_Block_Checkout_Boltpay extends Mage_Checkout_Block_Onepage_Re
         /////////////////////////////////////////////////////////////////////////
         $address = $quote->getShippingAddress();
         if (!$address->getStreet1()) {
-            if ( $session && $session->isLoggedIn()) {
-                /** @var Mage_Customer_Model_Customer $customer */
-                $customer = Mage::getModel('customer/customer')->load($session->getId());
-                $address = $customer->getPrimaryShippingAddress();
-                $hints['email'] = $customer->getEmail();
-            }
+        if ($session && $session->isLoggedIn()) {
+            /** @var Mage_Customer_Model_Customer $customer */
+            $customer = Mage::getModel('customer/customer')->load($session->getId());
+            $address = $customer->getPrimaryShippingAddress();
+            $hints['email'] = $customer->getEmail();
+        }
         }
 
         // If address value exists populate the hints array with existing address data.

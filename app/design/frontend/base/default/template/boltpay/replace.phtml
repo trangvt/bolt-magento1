@@ -35,7 +35,6 @@ if(!$this->isAllowedReplaceScriptOnCurrentPage() || !$this->canUseBolt() ) retur
 
 ?>
 <script>
-
     var onloadCallback = function(){
 
         /****************************************************************************************************
@@ -44,8 +43,8 @@ if(!$this->isAllowedReplaceScriptOnCurrentPage() || !$this->canUseBolt() ) retur
          ****************************************************************************************************/
         var replaceCheckout = function() {
 
-            var replaceRetries  = 20,
-                replaceInterval = 500;
+            var replaceRetries  = 10,
+                replaceInterval = 100;
 
             // replaceable button selectors and types of Bolt buttons to replace them with
             var selectors = {
@@ -178,10 +177,15 @@ if(!$this->isAllowedReplaceScriptOnCurrentPage() || !$this->canUseBolt() ) retur
     Element.observe(document, 'AjaxPro:onComplete:after', function() {
         onloadCallback();
 
+        setTimeout(function () {
+            boltLoaderEnabled();
+        }, 100);
+
         new Ajax.Request('<?=$this->getUrl('boltpay/order/n1wUpdate');?>', {
             method:'post',
             onSuccess: n1wResult,
-            onFailure: n1wResultFailure
+            onFailure: n1wResultFailure,
+            onComplete: boltLoaderDisabled
         });
     });
 
@@ -192,7 +196,32 @@ if(!$this->isAllowedReplaceScriptOnCurrentPage() || !$this->canUseBolt() ) retur
     }
 
     function n1wResultFailure() {
+        boltLoader(false);
         console.log('Some error appear!');
+    }
+
+    function boltLoaderEnabled() {
+        boltLoader(true);
+    }
+
+    function boltLoaderDisabled() {
+        boltLoader(false);
+    }
+
+    function boltLoader(isEnable) {
+        var buttons = '.suggestpage-activity .bolt-checkout-button',
+            buttonElements = document.querySelectorAll(buttons);
+
+        if (isEnable === true) {
+            // Start loader
+            setTimeout(function() {
+                buttonElements[0].insertAdjacentHTML('afterbegin', '<div class="bolt-loader">loading... </div>');
+                buttonElements[0].childNodes[1].setAttribute('style', 'opacity: 0.2');
+            }, 50);
+        } else {
+            //Stop loader
+            buttonElements[0].childNodes[1].style  = '';
+        }
     }
 
 </script>

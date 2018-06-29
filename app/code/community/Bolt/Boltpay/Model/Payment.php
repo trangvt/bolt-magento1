@@ -193,8 +193,12 @@ class Bolt_Boltpay_Model_Payment extends Mage_Payment_Model_Method_Abstract
      * 1. Logs the reference id and reference to the comments
      * 2. Keeps the authorization transaction record open
      * 3. Moves the transaction to either pending or non pending state based on the response
+     * @param Varien_Object $payment
+     * @param $amount
+     * @return Bolt_Boltpay_Model_Payment
+     * @throws Exception
      */
-    public function authorize(Mage_Sales_Model_Order_Payment $payment, $amount)
+    public function authorize(Varien_Object $payment, $amount)
     {
         try {
             // Auth transactions need to be kept open to support cancelling/voiding transaction

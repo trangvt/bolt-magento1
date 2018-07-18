@@ -83,18 +83,17 @@
           </bolt_boltpay_update_bolt_transaction_status>
         </observers>
       </sales_order_save_after>
-      <checkout_onepage_controller_success_action>
-          <observers>
-              <bolt_boltpay_clear_shopping_cart>
-                  <class>Bolt_Boltpay_Model_Observer</class>
-                  <method>clearShoppingCart</method>
-                  <depends>
-                      <ZZZZZ_Bolt />
-                  </depends>
-              </bolt_boltpay_clear_shopping_cart>
-          </observers>
+      <checkout_onepage_controller_success_action> <!-- Call after order has been saved and fowarded to success page -->
+        <observers>
+          <bolt_boltpay_clear_shopping_cart>
+            <class>Bolt_Boltpay_Model_Observer</class>
+            <method>clearShoppingCart</method>
+            <depends>
+              <ZZZZZ_Bolt />  <!--  psuedo module to place execution at the back of event queue -->
+            </depends>
+          </bolt_boltpay_clear_shopping_cart>
+        </observers>
       </checkout_onepage_controller_success_action>
-      <!-- Call after order has been saved -->
       <bolt_boltpay_save_order_after>
         <observers>
           <bolt_boltpay_verify_order_contents>

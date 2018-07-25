@@ -20,7 +20,7 @@
 
   <modules>
     <Bolt_Boltpay>
-      <version>1.2.0-pre</version> <!-- version number should be incremented appropriately  -->
+      <version>1.2.0-pre</version> <!-- commit 7b3e4e9296b58782a0eff3a00e38ba256a1b1e33 -->
     </Bolt_Boltpay>
   </modules>
 

@@ -42,8 +42,8 @@ echo "Updating and installing apache2 packages"
 printf $SEP
 
 sudo apt-get update
-sudo apt-get install -y --force-yes apache2 libapache2-mod-fastcgi make
-sudo apt-get install -y --force-yes php5-dev php-pear php5-mysql php5-cSITE_URL php5-gd php5-json php5-sqlite php5-pgsql
+sudo apt-get install -y --allow apache2 libapache2-mod-fastcgi make
+# sudo apt-get install -y --allow php5-dev php-pear php5-mysql php5-gd php5-json
 sudo a2enmod headers
 sudo apt autoremove
 
@@ -59,18 +59,15 @@ sudo a2enmod rewrite actions fastcgi alias
 echo "cgi.fix_pathinfo = 1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 ~/.phpenv/versions/$(phpenv version-name)/sbin/php-fpm
 
-ls -la /etc/apache2/
-ls -la /etc/apache2/sites-available/
-
 printf $BREATH
 echo "Configuring Apache virtual hosts"
 printf $SEP
 echo "Apache default virtual host configuration will be overwritten to serve $SITE_URL from $SITE_DIR"
 
-sudo cp -f $SCRIPT_DIR/tests/scripts/travis-ci-apache.conf /etc/apache2/sites-available/default
+sudo cp -f $SCRIPT_DIR/travis-ci-apache.conf /etc/apache2/sites-available/000-default.conf
 sudo sed -e "s?%DIR%?$SITE_DIR?g" --in-place /etc/apache2/sites-available/default
 sudo sed -e "s?%URL%?$SITE_URL?g" --in-place /etc/apache2/sites-available/default
-sudo echo "$SITE_HOST $SITE_URL" | sudo tee --append /etc/hosts > /dev/null
+sudo echo "\n$SITE_HOST $SITE_URL" | sudo tee --append /etc/hosts > /dev/null
 
 printf $BREATH
 echo "Restarting Apache"

@@ -41,20 +41,20 @@ printf $BREATH
 echo "Updating and installing apache2 packages"
 printf $SEP
 
-apt-get update
-apt-get install -y --force-yes apache2 libapache2-mod-fastcgi make
-apt-get install -y --force-yes php5-dev php-pear php5-mysql php5-cSITE_URL php5-gd php5-json php5-sqlite php5-pgsql
-a2enmod headers
+sudo apt-get update
+sudo apt-get install -y --force-yes apache2 libapache2-mod-fastcgi make
+sudo apt-get install -y --force-yes php5-dev php-pear php5-mysql php5-cSITE_URL php5-gd php5-json php5-sqlite php5-pgsql
+sudo a2enmod headers
 
 printf $BREATH
 echo "Enabling php-fpm"
 printf $SEP
 
-if [[ ${TRAVIS_PHP_VERSION:0:1} == "5" ]]; then groupadd nobody; fi
+if [[ ${TRAVIS_PHP_VERSION:0:1} == "5" ]]; then sudo groupadd nobody; fi
 # credit: https://www.marcus-povey.co.uk/2016/02/16/travisci-with-php-7-on-apache-php-fpm/
-if [[ ${TRAVIS_PHP_VERSION:0:1} != "5" ]]; then cp $SCRIPT_DIR/assets/www.conf ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.d/; fi
+if [[ ${TRAVIS_PHP_VERSION:0:1} != "5" ]]; then cp $SCRIPT_DIR/tests/scripts/www.conf ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.d/; fi
 cp ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf.default ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf
-a2enmod rewrite actions fastcgi alias
+sudo a2enmod rewrite actions fastcgi alias
 echo "cgi.fix_pathinfo = 1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 ~/.phpenv/versions/$(phpenv version-name)/sbin/php-fpm
 
@@ -63,13 +63,13 @@ echo "Configuring Apache virtual hosts"
 printf $SEP
 echo "Apache default virtual host configuration will be overwritten to serve $SITE_URL from $SITE_DIR"
 
-cp -f $SCRIPT_DIR/tests/scripts/travis-ci-apache.conf /etc/apache2/sites-available/default
-sed -e "s?%DIR%?$SITE_DIR?g" --in-place /etc/apache2/sites-available/default
-sed -e "s?%URL%?$SITE_URL?g" --in-place /etc/apache2/sites-available/default
-echo "$SITE_HOST $SITE_URL" | tee --append /etc/hosts > /dev/null
+sudo cp -f $SCRIPT_DIR/tests/scripts/travis-ci-apache.conf /etc/apache2/sites-available/default
+sudo sed -e "s?%DIR%?$SITE_DIR?g" --in-place /etc/apache2/sites-available/default
+sudo sed -e "s?%URL%?$SITE_URL?g" --in-place /etc/apache2/sites-available/default
+sudo echo "$SITE_HOST $SITE_URL" | tee --append /etc/hosts > /dev/null
 
 printf $BREATH
 echo "Restarting Apache"
 printf $SEP
 
-service apache2 restart
+sudo service apache2 restart

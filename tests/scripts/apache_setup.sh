@@ -59,6 +59,9 @@ sudo a2enmod rewrite actions fastcgi alias
 echo "cgi.fix_pathinfo = 1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 ~/.phpenv/versions/$(phpenv version-name)/sbin/php-fpm
 
+ls -la /etc/apache2/
+ls -la /etc/apache2/sites-available/
+
 printf $BREATH
 echo "Configuring Apache virtual hosts"
 printf $SEP

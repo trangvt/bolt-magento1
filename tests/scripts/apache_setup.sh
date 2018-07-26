@@ -67,7 +67,8 @@ echo "Apache default virtual host configuration will be overwritten to serve $SI
 sudo cp -f $SCRIPT_DIR/travis-ci-apache.conf /etc/apache2/sites-available/000-default.conf
 sudo sed -e "s?%DIR%?$SITE_DIR?g" --in-place /etc/apache2/sites-available/default
 sudo sed -e "s?%URL%?$SITE_URL?g" --in-place /etc/apache2/sites-available/default
-sudo echo "\n$SITE_HOST $SITE_URL" | sudo tee --append /etc/hosts > /dev/null
+# sudo echo "\n$SITE_HOST $SITE_URL" | sudo tee --append /etc/hosts > /dev/null
+sudo sh -c "echo '$SITE_HOST    $SITE_URL' >> /etc/hosts"
 
 printf $BREATH
 echo "Restarting Apache"

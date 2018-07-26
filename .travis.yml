@@ -40,11 +40,11 @@ before_script:
   - if [ -n "$GITHUB_TOKEN" ]; then composer config github-oauth.github.com ${GITHUB_TOKEN}; fi;
   - if [ -n "INTEGRATION_TESTS_TOKEN" ]; then composer config github-oauth.github.com ${INTEGRATION_TESTS_TOKEN}; fi;
   - composer show -i
-  - apachectl testconfig
   - cat /etc/hosts
 
 script:
   - bash /home/travis/build/BoltApp/bolt-magento1/tests/scripts/apache_setup.sh
+  - cat /etc/hosts
   - cd /home/travis/build/
   - curl -O https://files.magerun.net/n98-magerun.phar
   - chmod +x n98-magerun.phar

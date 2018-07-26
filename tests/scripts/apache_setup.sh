@@ -45,6 +45,7 @@ sudo apt-get update
 sudo apt-get install -y --force-yes apache2 libapache2-mod-fastcgi make
 sudo apt-get install -y --force-yes php5-dev php-pear php5-mysql php5-cSITE_URL php5-gd php5-json php5-sqlite php5-pgsql
 sudo a2enmod headers
+sudo apt autoremove
 
 printf $BREATH
 echo "Enabling php-fpm"

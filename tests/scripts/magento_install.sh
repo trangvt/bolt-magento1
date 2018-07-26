@@ -11,3 +11,5 @@ php -d memroy_limit=512M n98-magerun.phar install --magentoVersionByName="${MAGE
 php n98-magerun.phar config:set currency/options/base USD --root-dir ./magento/
 php n98-magerun.phar config:set currency/options/default USD --root-dir ./magento/
 php n98-magerun.phar config:set currency/options/allow USD --root-dir ./magento/
+
+cp -r magento/. BoltApp/bolt-magento1/

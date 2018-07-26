@@ -41,7 +41,7 @@ printf $BREATH
 echo "Updating and installing apache2 packages"
 printf $SEP
 
-sudo apt-get update
+#sudo apt-get update
 sudo apt-get install -y apache2 libapache2-mod-fastcgi make
 # sudo apt-get install -y php5-dev php-pear php5-mysql php5-gd php5-json
 sudo a2enmod headers
@@ -65,8 +65,8 @@ printf $SEP
 echo "Apache default virtual host configuration will be overwritten to serve $SITE_URL from $SITE_DIR"
 
 sudo cp -f $SCRIPT_DIR/travis-ci-apache.conf /etc/apache2/sites-available/000-default.conf
-sudo sed -e "s?%DIR%?$SITE_DIR?g" --in-place /etc/apache2/sites-available/default
-sudo sed -e "s?%URL%?$SITE_URL?g" --in-place /etc/apache2/sites-available/default
+sudo sed -e "s?%DIR%?$SITE_DIR?g" --in-place /etc/apache2/sites-available/000-default.conf
+sudo sed -e "s?%URL%?$SITE_URL?g" --in-place /etc/apache2/sites-available/000-default.conf
 # sudo echo "\n$SITE_HOST $SITE_URL" | sudo tee --append /etc/hosts > /dev/null
 sudo sh -c "echo '\n$SITE_HOST    $SITE_URL' >> /etc/hosts"
 
